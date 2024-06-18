@@ -1,38 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room Finder API Documentation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        h1, h2, h3 {
-            font-weight: normal;
-        }
-        h1 {
-            font-size: 28px;
-        }
-        h2 {
-            font-size: 24px;
-        }
-        h3 {
-            font-size: 20px;
-        }
-        p, ul, ol {
-            font-size: 16px;
-        }
-        code {
-            font-family: Consolas, monospace;
-            font-size: 14px;
-            background-color: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-    </style>
 </head>
 <body>
     <h1>Room Finder API Documentation</h1>
