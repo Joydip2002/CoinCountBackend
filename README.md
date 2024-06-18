@@ -9,11 +9,11 @@
     <h2>Usage</h2>
     <h3>Searching for Rooms</h3>
     <p>To search for rooms, send a GET request to the endpoint specifying the parameters:</p>
-    <pre><code>/api/search?location=<em>{location}</em>&amp;checkin=<em>{checkin_date}</em>&amp;checkout=<em>{checkout_date}</em></code></pre>
-    <p>Replace <code><em>{location}</em></code>, <code><em>{checkin_date}</em></code>, and <code><em>{checkout_date}</em></code> with your desired values.</p>
+    <pre><code>/api/search?location=<em>{location}</em>&amp;type=<em>{roomtype}</em>&amp;price=<em>{price}</em></code></pre>
+    <p>Replace <code><em>{location}</em></code>, <code><em>{roomtype}</em></code>, and <code><em>{price}</em></code> with your desired values.</p>
     <h3>Example</h3>
     <p>Example of searching for rooms:</p>
-    <pre><code>GET /api/search?location=New York&amp;checkin=2024-07-01&amp;checkout=2024-07-05</code></pre>
+    <pre><code>GET /api/search?location=New York&amp;type=2bhk&amp;price=6000</code></pre>
     <h2>Response</h2>
     <p>The API will respond with a JSON array of rooms matching the criteria:</p>
     <pre><code>[
@@ -21,15 +21,13 @@
         "name": "Luxury Suite",
         "price": 250,
         "location": "New York",
-        "checkin": "2024-07-01",
-        "checkout": "2024-07-05"
+        "type":2bhk
     },
     {
         "name": "Standard Room",
         "price": 120,
         "location": "New York",
-        "checkin": "2024-07-01",
-        "checkout": "2024-07-05"
+        "type":""
     }
     ]</code></pre>
     <h2>Error Handling</h2>
