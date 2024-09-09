@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const PORT = process.env.PORT | 8089;
+const PORT = process.env.PORT || 8089;
 const app = express();
 
 // Middleware
@@ -10,14 +10,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-const routes = require('./routes/ez_routes');
+const routes = require('./routes/routes');
 app.use(bodyParser.json())
 app.use(routes);
 
 // Testing API
 
 app.get('/', (req, res) => {
-    res.send("This is RoomEZ API testing..");
+    res.send("This is Coin count API testing..");
 });
 
 
