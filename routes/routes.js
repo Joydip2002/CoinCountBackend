@@ -13,5 +13,10 @@ router.get("/fetchTransactions/:user_id",usersControler.fetchTransactions);
 router.get("/fetchIncomeExpenseDetails/:userId",usersControler.fetchIncomeExpenseDetails);
 router.get("/todayTransactionDetails/:userId",usersControler.todayTransactionDetails);
 
+router.post("/addCustomer/:userId",usersControler.addCustomer);
+router.get("/fetchCustomerList/:userId",usersControler.fetchCustomerList);
+
+router.post("/addCategory",usersControler.addCategory);
+router.get("/fetchCategory",usersControler.fetchCategory);
 
 module.exports = router

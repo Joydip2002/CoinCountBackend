@@ -96,11 +96,15 @@ async function addTransactions(req,res){
             transaction_type:req.body.type || "",
             amount:req.body.amount || 0,
             user_id:req.body.user_id || 0,
-            category:req.body.category || "",
+            customer_id:req.body.customer_id || 0,
+            category_id:req.body.category_id || "",
             description:req.body.description || ""
         };
+        console.log('====================================');
+        console.log(req_data);
+        console.log('====================================');
         if(req_data.user_id >0){
-            if(req_data.category!=""){
+            if(req_data.category_id!=""){
                 if(req_data.amount > 0){
                     const createTansaction = await models.user_transactions.create(req_data);
                     if(createTansaction){
@@ -341,7 +345,7 @@ async function todayTransactionDetails(req,res){
                         transaction_type, 
                         amount, 
                         user_id, 
-                        category, 
+                        category_id, 
                         description, 
                         createdAt, 
                         updatedAt 
@@ -382,6 +386,187 @@ async function todayTransactionDetails(req,res){
     }
 }
 
+async function addCustomer(req,res){
+    try {
+        var response={};
+        if(req.params.userId>0){
+            var userId= req.params.userId;
+            const userCheck = await models.users.findOne({
+                where:{id:req.params.userId}
+            })
+            if(userCheck){
+                // var today = new Date();
+                // var formattedDate = today.toISOString().split('T')[0];
+                // var timestamp = formattedDate;
+                // var datePart = timestamp.split(' ')[0];
+                console.log('====================================');
+                console.log(req.body.customer);
+                console.log('====================================');
+                var customerName=req.body.customer??"";
+                if(customerName!=""){
+                    const addCustomer = await models.sequelize.query(`
+                        INSERT INTO customer (user_id, name, status, createdAt, updatedAt)
+                        VALUES (:userId, :customerName, '1', NOW(), NOW());
+                    `, {
+                        replacements: { userId,customerName},
+                        type: QueryTypes.INSERT
+                    });
+                    response={
+                        'status':200,
+                        'msg':'customer added successful',
+                    }
+                }else{
+                    response={
+                        'status':400,
+                        'msg':'customer field can\'t empty'
+                    }
+                }
+            }else{
+                response={
+                    'status':400,
+                    'msg':'user not exists'
+                }
+            }
+        }else{
+            response={
+                'status':400,
+                'msg':"Invalid UserId"
+            }
+        }
+        res.json({
+            data:response
+        })
+    } catch (error) {
+        console.error("Error occurred - addCustomer: ", error);
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - addCustomer: Post API"
+        });
+    }
+}
+
+async function fetchCustomerList(req,res){
+    try{
+        console.log('====================================');
+        console.log(req.params.userId);
+        console.log('====================================');
+        var userId = req.params.userId??0;
+        if(userId>0){
+            const customerData = await models.sequelize.query(
+                `SELECT DISTINCT name , id FROM customer WHERE user_id=:userId`,
+                {
+                    replacements: {userId},
+                    type:QueryTypes.SELECT
+                }
+            );
+            if(customerData){
+                res.json({
+                    'status':200,
+                    data:customerData
+                })
+            }else{
+                res.json({
+                    'status':400,
+                    data:"something went wrong!"
+                })
+            }
+        }else{
+            res.json({
+                'status':400,
+                data:"User does not exist!"
+            })
+        }
+    }catch(error){
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - fetchCustomerList: Get API"
+        })
+    }
+}
+
+async function addCategory(req,res){
+    try {
+        var category=req.body.category??"";
+        console.log('====================================');
+        console.log(category);
+        console.log('====================================');
+        if(category!=""){
+            var checkCategoryName=await models.sequelize.query(
+                `SELECT * FROM category WHERE name=:categoryName`,
+                {
+                    replacements:{categoryName:category.toLowerCase()},
+                    type:QueryTypes.SELECT
+                }
+            );
+            console.log('====================================');
+            console.log(checkCategoryName);
+            console.log('====================================');
+            if(checkCategoryName==""){
+                var insertCategory=await models.sequelize.query(
+                    `INSERT INTO category (name,createdAt,updatedAt,status) VALUES (:category,NOW(),NOW(),'1')`,
+                    {
+                        replacements:{category},
+                        type:QueryTypes.INSERT
+                    }
+                )
+                if(insertCategory){
+                    res.json({
+                        status:200,
+                        msg:"category added successful"
+                    })
+                }else{
+                    res.status(500).json({
+                        status:500,
+                        msg:"something went wrong!"
+                    })
+                }
+            }else{
+                res.status(200).json({
+                    status:404,
+                    msg:"category already exist"
+                })
+            }
+        }else{
+            res.status(200).json({
+                status:400,
+                msg:"Category not accept empty value"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - addCategory: POST API"
+        })
+    }
+}
+
+async function fetchCategory(req,res){
+    try {
+        const categoryList = await models.sequelize.query(
+            `SELECT * FROM category`,
+            {
+                type:QueryTypes.SELECT
+            }
+        );
+        if(categoryList){
+            res.json({
+                'status':200,
+                data:categoryList
+            })
+        }else{
+            res.json({
+                'status':400,
+                data:""
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - fetchCategory: Get API"
+        })
+    }
+}
+
 module.exports = {
     // getAllUsers:getAllUsers
     coincountSignup:coincountSignup,
@@ -391,5 +576,9 @@ module.exports = {
     fetchTransactions:fetchTransactions,
     fetchUserIdByEmail:fetchUserIdByEmail,
     fetchIncomeExpenseDetails:fetchIncomeExpenseDetails,
-    todayTransactionDetails:todayTransactionDetails
+    todayTransactionDetails:todayTransactionDetails,
+    addCustomer:addCustomer,
+    fetchCustomerList:fetchCustomerList,
+    addCategory:addCategory,
+    fetchCategory:fetchCategory
 };
