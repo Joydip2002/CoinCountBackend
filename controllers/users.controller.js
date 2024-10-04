@@ -404,16 +404,30 @@ async function addCustomer(req,res){
                 console.log('====================================');
                 var customerName=req.body.customer??"";
                 if(customerName!=""){
-                    const addCustomer = await models.sequelize.query(`
-                        INSERT INTO customer (user_id, name, status, createdAt, updatedAt)
-                        VALUES (:userId, :customerName, '1', NOW(), NOW());
-                    `, {
-                        replacements: { userId,customerName},
-                        type: QueryTypes.INSERT
-                    });
-                    response={
-                        'status':200,
-                        'msg':'customer added successful',
+                    var checkCustomerName=await models.sequelize.query(
+                        `SELECT * FROM customer WHERE name=:customerName`,
+                        {
+                            replacements:{customerName:customerName.toLowerCase()},
+                            type:QueryTypes.SELECT
+                        }
+                    );
+                    if(checkCustomerName==""){
+                        const addCustomer = await models.sequelize.query(`
+                            INSERT INTO customer (user_id, name, status, createdAt, updatedAt)
+                            VALUES (:userId, :customerName, '1', NOW(), NOW());
+                        `, {
+                            replacements: { userId,customerName},
+                            type: QueryTypes.INSERT
+                        });
+                        response={
+                            'status':200,
+                            'msg':'customer added successful',
+                        }
+                    }else{
+                        req.status(200).json({
+                            'status':400,
+                            'msg':"Customer name already exist! Use another name😊"
+                        })
                     }
                 }else{
                     response={
