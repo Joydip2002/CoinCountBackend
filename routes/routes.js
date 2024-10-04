@@ -19,4 +19,6 @@ router.get("/fetchCustomerList/:userId",usersControler.fetchCustomerList);
 router.post("/addCategory",usersControler.addCategory);
 router.get("/fetchCategory",usersControler.fetchCategory);
 
+router.post("/fetchTransactionDetailsSingleUser",usersControler.fetchTransactionDetailsSingleUser);
+
 module.exports = router

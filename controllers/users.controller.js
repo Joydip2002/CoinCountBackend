@@ -581,6 +581,79 @@ async function fetchCategory(req,res){
     }
 }
 
+async function fetchTransactionDetailsSingleUser(req,res){
+    try{
+        var req_data={};
+        var response={};
+        req_data.customerId=req.body.customer_id ?? 0;
+        req_data.filterDate=req.body.filter_date??"";
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        console.log(req_data);
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        
+        if(req_data.customerId>0 && req_data.filterDate !=""){
+            var checkCustomer = await models.sequelize.query(
+                `SELECT * FROM customer WHERE id=:customer_id`,
+                {
+                    replacements:{customer_id:req_data.customerId},
+                    type:QueryTypes.SELECT
+                }
+            );
+            if(checkCustomer){
+                var getDataQuery=await models.sequelize.query(
+                    `SELECT * FROM user_transactions WHERE customer_id=:customer_id AND updatedAt=:filterDate`,
+                    {
+                        replacements:{
+                            customer_id:req_data.customerId,
+                            filterDate:req_data.filterDate
+                        },
+                        type:QueryTypes.SELECT
+                    }
+                );
+                var getCustomerDetails=await models.sequelize.query(
+                    `SELECT * FROM customer WHERE id=:customer_id`,
+                    {
+                        replacements:{
+                            customer_id:req_data.customerId,
+                        },
+                        type:QueryTypes.SELECT
+                    }
+                );
+                if(getDataQuery!=""){
+                    response={
+                        status:200,
+                        data:getDataQuery,
+                        customerData:getCustomerDetails
+                    };
+                }else{
+                    response={
+                        status:400,
+                        data:[]
+                    };
+                }
+            }else{
+                response={
+                    status:400,
+                    msg:"Customer not exists!"
+                }
+            }
+        }else{
+            response={
+                status:400,
+                msg:"Please provide customerId & filterDate"
+            }
+        }
+        res.json({
+            data:response
+        })
+    }catch (error) {
+        res.status(500).json({
+            status:500,
+            msg:'Error occured - fetchTransactionDetailsSingleUser : Post Api'
+        })
+    }
+}
+
 module.exports = {
     // getAllUsers:getAllUsers
     coincountSignup:coincountSignup,
@@ -594,5 +667,6 @@ module.exports = {
     addCustomer:addCustomer,
     fetchCustomerList:fetchCustomerList,
     addCategory:addCategory,
-    fetchCategory:fetchCategory
+    fetchCategory:fetchCategory,
+    fetchTransactionDetailsSingleUser:fetchTransactionDetailsSingleUser
 };
