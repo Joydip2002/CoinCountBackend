@@ -424,10 +424,10 @@ async function addCustomer(req,res){
                             'msg':'customer added successful',
                         }
                     }else{
-                        req.status(200).json({
+                        response={
                             'status':400,
                             'msg':"Customer name already exist! Use another name😊"
-                        })
+                        }
                     }
                 }else{
                     response={
