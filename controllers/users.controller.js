@@ -630,6 +630,7 @@ async function fetchTransactionDetailsSingleUser(req,res){
                 }else{
                     response={
                         status:400,
+                        msg:'End date must be later than start date',
                         data:[]
                     };
                 }
