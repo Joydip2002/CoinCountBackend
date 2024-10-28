@@ -586,12 +586,13 @@ async function fetchTransactionDetailsSingleUser(req,res){
         var req_data={};
         var response={};
         req_data.customerId=req.body.customer_id ?? 0;
-        req_data.filterDate=req.body.filter_date??"";
+        req_data.start_date=req.body.start_date??"";
+        req_data.end_date=req.body.end_date??"";
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         console.log(req_data);
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         
-        if(req_data.customerId>0 && req_data.filterDate !=""){
+        if(req_data.customerId>0 && req_data.start_date !=""){
             var checkCustomer = await models.sequelize.query(
                 `SELECT * FROM customer WHERE id=:customer_id`,
                 {
@@ -601,11 +602,12 @@ async function fetchTransactionDetailsSingleUser(req,res){
             );
             if(checkCustomer){
                 var getDataQuery=await models.sequelize.query(
-                    `SELECT * FROM user_transactions WHERE customer_id=:customer_id AND updatedAt=:filterDate`,
+                    `SELECT * FROM user_transactions WHERE customer_id=:customer_id AND updatedAt BETWEEN :start_date AND :end_date`,
                     {
                         replacements:{
                             customer_id:req_data.customerId,
-                            filterDate:req_data.filterDate
+                            start_date:req_data.start_date,
+                            end_date:req_data.end_date
                         },
                         type:QueryTypes.SELECT
                     }
@@ -640,7 +642,7 @@ async function fetchTransactionDetailsSingleUser(req,res){
         }else{
             response={
                 status:400,
-                msg:"Please provide customerId & filterDate"
+                msg:"Please provide customerId & start_date"
             }
         }
         res.json({
