@@ -288,9 +288,7 @@ async function fetchTransactionById(req,res){
                 'msg':'Transaction id must be greater than 0'
             }
         }
-        res.json({
-            data:response
-        })
+        res.json(response);
     } catch (error) {
         console.error("Error occurred - fetchTransactionById: ", error);
         res.status(500).json({
