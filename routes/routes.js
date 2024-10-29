@@ -20,5 +20,7 @@ router.post("/addCategory",usersControler.addCategory);
 router.get("/fetchCategory",usersControler.fetchCategory);
 
 router.post("/fetchTransactionDetailsSingleUser",usersControler.fetchTransactionDetailsSingleUser);
+router.get("/fetchTransactionById/:tid",usersControler.fetchTransactionById);
+router.post("/updateTransactionById/:tid",usersControler.updateTransactionById);
 
 module.exports = router

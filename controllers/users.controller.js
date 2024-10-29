@@ -259,6 +259,90 @@ async function fetchTransactions(req,res){
     }
 }
 
+async function fetchTransactionById(req,res){
+    try {
+        var response={};
+        const tid = parseInt(req.params.tid)>0 ? parseInt(req.params.tid) : 0;
+        if(tid > 0){
+            const fetchTransaction = await models.sequelize.query(
+                `SELECT id,transaction_type,amount,description FROM user_transactions WHERE id=:tid`,
+                {
+                    replacements:{tid:tid},
+                    type:QueryTypes.SELECT
+                }
+            );
+            if(fetchTransaction){
+                response={
+                    'status':200,
+                    'data':fetchTransaction
+                }
+            }else{
+                response={
+                    'status':200,
+                    'data':[]
+                }
+            }
+        }else{
+            response={
+                'status':400,
+                'msg':'Transaction id must be greater than 0'
+            }
+        }
+        res.json({
+            data:response
+        })
+    } catch (error) {
+        console.error("Error occurred - fetchTransactionById: ", error);
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - fetchTransactionById: Get API"
+        });
+    }
+}
+
+async function updateTransactionById(req, res) {
+    try {
+        let response = {};
+        const tid = parseInt(req.params.tid) > 0 ? parseInt(req.params.tid) : 0;
+        const transaction_type = req.body.transaction_type || "";
+        const description = req.body.description || "";
+        const amount = req.body.amount && req.body.amount > 0 ? req.body.amount : 0;
+
+        if (tid > 0) {
+            const updateTransaction = await models.sequelize.query(
+                `UPDATE user_transactions 
+                 SET transaction_type = :ttype, amount = :amount, description = :description 
+                 WHERE id = :tid`,
+                {
+                    replacements: {
+                        ttype: transaction_type,
+                        amount: amount,
+                        description: description,
+                        tid: tid
+                    },
+                    type: QueryTypes.UPDATE
+                }
+            );
+
+            response = updateTransaction
+                ? { status: 200, data: updateTransaction[1] }
+                : { status: 200, data: [] };
+        } else {
+            response = {
+                status: 400,
+                msg: 'Transaction ID must be greater than 0'
+            };
+        }
+
+        res.json(response);
+    } catch (error) {
+        console.error("Error occurred - updateTransactionById: ", error);
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - updateTransactionById: Get API"
+        });
+    }
+}
 async function fetchIncomeExpenseDetails(req,res) {
     try{
         var response={};
@@ -671,5 +755,7 @@ module.exports = {
     fetchCustomerList:fetchCustomerList,
     addCategory:addCategory,
     fetchCategory:fetchCategory,
-    fetchTransactionDetailsSingleUser:fetchTransactionDetailsSingleUser
+    fetchTransactionDetailsSingleUser:fetchTransactionDetailsSingleUser,
+    fetchTransactionById:fetchTransactionById,
+    updateTransactionById:updateTransactionById
 };
