@@ -347,22 +347,36 @@ async function deleteTransactionById(req,res){
         var response={};
         const tid = parseInt(req.params.tid)>0 ? parseInt(req.params.tid) : 0;
         if(tid > 0){
-            const deleteTransaction = await models.sequelize.query(
-                `DELETE FROM user_transactions WHERE id=:tid`,
+            const checkTid = await models.sequelize.query(
+                `SELECT id FROM user_transactions WHERE id=:tid`,
                 {
                     replacements:{tid:tid},
-                    type:QueryTypes.DELETE
+                    type:QueryTypes.SELECT
                 }
             );
-            if(deleteTransaction){
-                response={
-                    'status':200,
-                    'data':deleteTransaction
+            if(checkTid.length>0){
+                const deleteTransaction = await models.sequelize.query(
+                    `DELETE FROM user_transactions WHERE id=:tid`,
+                    {
+                        replacements:{tid:tid},
+                        type:QueryTypes.DELETE
+                    }
+                );
+                if(deleteTransaction){
+                    response={
+                        'status':200,
+                        'data':deleteTransaction
+                    }
+                }else{
+                    response={
+                        'status':200,
+                        'data':[]
+                    }
                 }
             }else{
                 response={
-                    'status':200,
-                    'data':[]
+                    'status':400,
+                    'msg':'Transaction id not exist'
                 }
             }
         }else{
