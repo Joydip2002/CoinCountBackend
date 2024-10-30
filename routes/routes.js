@@ -22,5 +22,6 @@ router.get("/fetchCategory",usersControler.fetchCategory);
 router.post("/fetchTransactionDetailsSingleUser",usersControler.fetchTransactionDetailsSingleUser);
 router.get("/fetchTransactionById/:tid",usersControler.fetchTransactionById);
 router.post("/updateTransactionById/:tid",usersControler.updateTransactionById);
+router.delete("/deleteTransactionById/:tid",usersControler.deleteTransactionById);
 
 module.exports = router

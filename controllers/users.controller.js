@@ -337,10 +337,50 @@ async function updateTransactionById(req, res) {
         console.error("Error occurred - updateTransactionById: ", error);
         res.status(500).json({
             status: 500,
-            msg: "Error occurred - updateTransactionById: Get API"
+            msg: "Error occurred - updateTransactionById: POST API"
         });
     }
 }
+
+async function deleteTransactionById(req,res){
+    try {
+        var response={};
+        const tid = parseInt(req.params.tid)>0 ? parseInt(req.params.tid) : 0;
+        if(tid > 0){
+            const deleteTransaction = await models.sequelize.query(
+                `DELETE FROM user_transactions WHERE id=:tid`,
+                {
+                    replacements:{tid:tid},
+                    type:QueryTypes.DELETE
+                }
+            );
+            if(deleteTransaction){
+                response={
+                    'status':200,
+                    'data':deleteTransaction
+                }
+            }else{
+                response={
+                    'status':200,
+                    'data':[]
+                }
+            }
+        }else{
+            response={
+                'status':400,
+                'msg':'Transaction id must be greater than 0'
+            }
+        }
+        res.json(response);
+    } catch (error) {
+        console.error("Error occurred - deleteTransactionById: ", error);
+        res.status(500).json({
+            status: 500,
+            msg: "Error occurred - deleteTransactionById: DELETE API"
+        });
+    }
+}
+
 async function fetchIncomeExpenseDetails(req,res) {
     try{
         var response={};
@@ -755,5 +795,6 @@ module.exports = {
     fetchCategory:fetchCategory,
     fetchTransactionDetailsSingleUser:fetchTransactionDetailsSingleUser,
     fetchTransactionById:fetchTransactionById,
-    updateTransactionById:updateTransactionById
+    updateTransactionById:updateTransactionById,
+    deleteTransactionById:deleteTransactionById
 };
