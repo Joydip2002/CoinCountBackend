@@ -738,7 +738,7 @@ async function fetchTransactionDetailsSingleUser(req,res){
             );
             if(checkCustomer){
                 var getDataQuery=await models.sequelize.query(
-                    `SELECT * FROM user_transactions WHERE customer_id=:customer_id AND updatedAt BETWEEN :start_date AND :end_date`,
+                    `SELECT * FROM user_transactions WHERE customer_id=:customer_id AND updatedAt BETWEEN :start_date AND :end_date AND category_id<>2`,
                     {
                         replacements:{
                             customer_id:req_data.customerId,
